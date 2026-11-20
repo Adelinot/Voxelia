@@ -1,0 +1,44 @@
+[
+    {
+        "id": 1,
+        "name": "grass",
+        "top": [1, 0],
+        "bottom": [2, 0],
+        "side": [0, 0]
+    },
+    {
+        "id": 2,
+        "name": "dirt",
+        "all": [2, 0]
+    },
+    {
+        "id": 3,
+        "name": "sand",
+        "all": [0, 1]
+    },
+    {
+        "id": 4,
+        "name": "stone",
+        "all": [1, 1]
+    },
+    {
+        "id": 5,
+        "name": "coal",
+        "all": [2, 1]
+    },
+    {
+        "id": 6,
+        "name": "iron",
+        "all": [0, 2]
+    },
+    {
+        "id": 7,
+        "name": "gold",
+        "all": [1, 2]
+    },
+    {
+        "id": 8,
+        "name": "diamond",
+        "all": [2, 2]
+    }
+]
