@@ -149,9 +149,6 @@ bool BlockInteraction::update(
         placeZ
     );
 
-    // ------------------------------------------
-    // HOLD LEFT CLICK TO BREAK
-    // ------------------------------------------
 
     if (leftDown && hit) {
 
@@ -183,10 +180,7 @@ bool BlockInteraction::update(
         crack.normalY = placeY - targetY;
         crack.normalZ = placeZ - targetZ;
 
-        crack.frame = std::min(
-            5,
-            (int)(breakProgress / breakDuration * 6.0f)
-        );
+        crack.frame = std::min(5,(int)(breakProgress / breakDuration * 6.0f));
 
         if (breakProgress >= breakDuration) {
 
@@ -197,9 +191,7 @@ bool BlockInteraction::update(
             int lastIndex = (int)world.size() - 1;
 
             // Remove block efficiently using swap-remove.
-            player.removeSolidBlock(
-                target.x, target.y, target.z
-            );
+            player.removeSolidBlock(target.x, target.y, target.z);
 
             if (hitIndex != lastIndex) {
                 world[hitIndex] = world[lastIndex];
@@ -207,8 +199,7 @@ bool BlockInteraction::update(
                 const auto& moved = world[hitIndex];
 
                 blockIndex[{
-                    moved.x, moved.y, moved.z
-                }] = hitIndex;
+                    moved.x, moved.y, moved.z}] = hitIndex;
             }
 
             world.pop_back();
@@ -227,15 +218,9 @@ bool BlockInteraction::update(
         crack.active = false;
     }
 
-    // ------------------------------------------
-    // RIGHT CLICK TO PLACE
-    // ------------------------------------------
-
     if (rightPressed && hit) {
 
-        GridPosition destination{
-            placeX, placeY, placeZ
-        };
+        GridPosition destination{placeX, placeY, placeZ};
 
         if (blockIndex.find(destination) != blockIndex.end())
             return false;
