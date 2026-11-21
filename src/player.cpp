@@ -16,10 +16,6 @@ Player::Player(
     refreshWorld(world);
 }
 
-// --------------------------------------------------
-// COLLISION DETECTION
-// --------------------------------------------------
-
 bool Player::collidesAt(
     const glm::vec3& feetPosition
 ) const {
@@ -67,26 +63,17 @@ bool Player::collidesAt(
     return false;
 }
 
-// --------------------------------------------------
-// CAMERA POSITION
-// --------------------------------------------------
 
 glm::vec3 Player::cameraPosition() const {
     return position + glm::vec3(0.0f, eyeHeight, 0.0f);
 }
 
-// --------------------------------------------------
-// PLAYER UPDATE
-// --------------------------------------------------
 
 void Player::update(
     GLFWwindow* window,
     float deltaTime
 ) {
 
-    // ----------------------------------------------
-    // MOUSE LOOK
-    // ----------------------------------------------
 
     double mouseX, mouseY;
 
@@ -117,22 +104,16 @@ void Player::update(
     // Calculate the direction the camera faces.
     glm::vec3 direction;
 
-    direction.x =
-        std::cos(glm::radians(yaw)) *
+    direction.x = std::cos(glm::radians(yaw)) *
         std::cos(glm::radians(pitch));
 
-    direction.y =
-        std::sin(glm::radians(pitch));
+    direction.y = std::sin(glm::radians(pitch));
 
-    direction.z =
-        std::sin(glm::radians(yaw)) *
+    direction.z = std::sin(glm::radians(yaw)) *
         std::cos(glm::radians(pitch));
 
     front = glm::normalize(direction);
 
-    // ----------------------------------------------
-    // WASD MOVEMENT
-    // ----------------------------------------------
 
     glm::vec3 forward = glm::normalize(
         glm::vec3(front.x, 0.0f, front.z)
@@ -164,8 +145,7 @@ void Player::update(
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         speed = sprintSpeed;
 
-    glm::vec3 displacement =
-        movement * speed * deltaTime;
+    glm::vec3 displacement = movement * speed * deltaTime;
 
     // Resolve X and Z separately so the player
     // can slide along walls.
@@ -180,10 +160,6 @@ void Player::update(
     if (collidesAt(position))
         position.z -= displacement.z;
 
-    // ----------------------------------------------
-    // JUMPING
-    // ----------------------------------------------
-
     if (
         glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS
         && grounded
@@ -192,9 +168,6 @@ void Player::update(
         grounded = false;
     }
 
-    // ----------------------------------------------
-    // GRAVITY
-    // ----------------------------------------------
 
     velocity.y -= 20.0f * deltaTime;
 
@@ -223,9 +196,6 @@ void Player::update(
     }
 }
 
-// --------------------------------------------------
-// VIEW MATRIX
-// --------------------------------------------------
 
 glm::mat4 Player::getViewMatrix() const {
 
