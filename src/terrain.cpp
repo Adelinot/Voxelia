@@ -11,10 +11,6 @@
 #include <chrono>
 #include <limits>
 
-// ==================================================
-// PERLIN NOISE
-// ==================================================
-
 class PerlinNoise {
 private:
     std::array<int, 512> permutation{};
@@ -126,9 +122,6 @@ public:
     }
 };
 
-// ==================================================
-// RANDOM WORLD SEED
-// ==================================================
 
 static std::uint32_t createWorldSeed() {
 
@@ -148,9 +141,6 @@ static std::uint32_t createWorldSeed() {
     );
 }
 
-// ==================================================
-// TERRAIN GENERATION
-// ==================================================
 
 std::vector<TerrainBlock> generateTerrain(
     int size,
@@ -183,9 +173,6 @@ std::vector<TerrainBlock> generateTerrain(
     for (int x = 0; x < size; x++) {
         for (int z = 0; z < size; z++) {
 
-            // --------------------------------------
-            // TERRAIN HEIGHT
-            // --------------------------------------
 
             double continental = noise.noise(
                 x * 0.012,
@@ -216,9 +203,6 @@ std::vector<TerrainBlock> generateTerrain(
                     std::round(combined * 30.0)
                 );
 
-            // --------------------------------------
-            // SURFACE VARIATION
-            // --------------------------------------
 
             double moisture = noise.noise(
                 x * 0.025 + 100.0,
@@ -228,12 +212,8 @@ std::vector<TerrainBlock> generateTerrain(
 
             bool sandySurface = moisture < -0.40;
 
-            // Exactly 'depth' blocks in each column.
             int bottomY = surfaceY - depth + 1;
 
-            // --------------------------------------
-            // GENERATE THE VERTICAL COLUMN
-            // --------------------------------------
 
             for (int y = bottomY; y <= surfaceY; y++) {
 
@@ -251,17 +231,12 @@ std::vector<TerrainBlock> generateTerrain(
                 }
                 else {
 
-                    // ----------------------------------
-                    // ORE DISTRIBUTION
-                    // ----------------------------------
-
                     double oreNoise = noise.noise(
                         x * 0.18 + 57.3,
                         y * 0.18 + 23.7,
                         z * 0.18 - 91.2
                     );
 
-                    // Rare, deep ores first.
                     if (
                         depthFromSurface >= 27 &&
                         oreNoise > 0.66
@@ -295,7 +270,6 @@ std::vector<TerrainBlock> generateTerrain(
             }
         }
 
-        // Simple progress indication every 16 columns.
         if ((x + 1) % 16 == 0) {
             std::cout << "Generated "
                       << (x + 1) << " / "
@@ -310,9 +284,6 @@ std::vector<TerrainBlock> generateTerrain(
     return world;
 }
 
-// ==================================================
-// FIND SURFACE HEIGHT
-// ==================================================
 
 int getSurfaceHeight(
     const std::vector<TerrainBlock>& world,
