@@ -3,10 +3,7 @@
 
 #include <iostream>
 
-static GLuint compileHUDShader(
-    GLenum type,
-    const char* source
-) {
+static GLuint compileHUDShader(GLenum type,const char* source) {
     GLuint shader = glCreateShader(type);
 
     glShaderSource(shader, 1, &source, nullptr);
@@ -18,12 +15,9 @@ static GLuint compileHUDShader(
     if (!success) {
         char info[1024];
 
-        glGetShaderInfoLog(
-            shader, 1024, nullptr, info
-        );
+        glGetShaderInfoLog(shader, 1024, nullptr, info);
 
-        std::cerr << "HUD shader error: "
-                  << info << "\n";
+        std::cerr << "HUD shader error: "<< info << "\n";
 
         glDeleteShader(shader);
         return 0;
@@ -31,10 +25,6 @@ static GLuint compileHUDShader(
 
     return shader;
 }
-
-// --------------------------------------------------
-// INITIALIZE
-// --------------------------------------------------
 
 bool HUD::initialize() {
 
@@ -60,8 +50,7 @@ bool HUD::initialize() {
 
             TexCoord = aUV;
             Color = aColor;
-        }
-    )";
+        })";
 
     const char* fragmentSource = R"(
         #version 330 core
@@ -80,16 +69,11 @@ bool HUD::initialize() {
             } else {
                 FragColor = Color;
             }
-        }
-    )";
+        })";
 
-    GLuint vertex = compileHUDShader(
-        GL_VERTEX_SHADER, vertexSource
-    );
+    GLuint vertex = compileHUDShader(GL_VERTEX_SHADER, vertexSource);
 
-    GLuint fragment = compileHUDShader(
-        GL_FRAGMENT_SHADER, fragmentSource
-    );
+    GLuint fragment = compileHUDShader(GL_FRAGMENT_SHADER, fragmentSource);
 
     if (!vertex || !fragment) {
         if (vertex) glDeleteShader(vertex);
@@ -113,23 +97,18 @@ bool HUD::initialize() {
     if (!success) {
         char info[1024];
 
-        glGetProgramInfoLog(
-            program, 1024, nullptr, info
-        );
+        glGetProgramInfoLog(program, 1024, nullptr, info);
 
-        std::cerr << "HUD linking error: "
-                  << info << "\n";
+        std::cerr << "HUD linking error: " << info << "\n";
 
         glDeleteProgram(program);
         program = 0;
         return false;
     }
 
-    screenSizeLoc =
-        glGetUniformLocation(program, "screenSize");
+    screenSizeLoc =glGetUniformLocation(program, "screenSize");
 
-    texturedLoc =
-        glGetUniformLocation(program, "useTexture");
+    texturedLoc =glGetUniformLocation(program, "useTexture");
 
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -138,31 +117,19 @@ bool HUD::initialize() {
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    glBufferData(
-        GL_ARRAY_BUFFER,
-        6 * 8 * sizeof(float),
-        nullptr,
-        GL_DYNAMIC_DRAW
-    );
+    glBufferData(GL_ARRAY_BUFFER,6 * 8 * sizeof(float),nullptr,GL_DYNAMIC_DRAW);
 
     constexpr GLsizei stride = 8 * sizeof(float);
 
-    glVertexAttribPointer(
-        0, 2, GL_FLOAT, GL_FALSE,
-        stride, (void*)0
-    );
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE,stride, (void*)0);
     glEnableVertexAttribArray(0);
 
     glVertexAttribPointer(
         1, 2, GL_FLOAT, GL_FALSE,
-        stride, (void*)(2 * sizeof(float))
-    );
+        stride, (void*)(2 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(
-        2, 4, GL_FLOAT, GL_FALSE,
-        stride, (void*)(4 * sizeof(float))
-    );
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE,stride, (void*)(4 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
     glBindVertexArray(0);
@@ -171,11 +138,7 @@ bool HUD::initialize() {
 
     return true;
 }
-
-// --------------------------------------------------
-// DRAW QUAD
-// --------------------------------------------------
-
+//draw quad
 void HUD::drawQuad(
     float x,
     float y,
@@ -225,25 +188,17 @@ void HUD::drawQuad(
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    glBufferSubData(
-        GL_ARRAY_BUFFER,
-        0,
-        sizeof(vertices),
-        vertices
-    );
+    glBufferSubData(GL_ARRAY_BUFFER,0,sizeof(vertices),vertices);
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
-// --------------------------------------------------
 // DRAW SLOT NUMBER
-// --------------------------------------------------
 
 void HUD::drawDigit(
     int digit,
     float x,
-    float y
-) {
+    float y) {
     static const char* digits[8][5] = {
         {"010","110","010","010","111"},
         {"111","001","111","100","111"},
@@ -273,16 +228,12 @@ void HUD::drawDigit(
                     pixel,
                     pixel,
                     nullptr,
-                    color
-                );
+                    color);
             }
         }
     }
 }
-
-// --------------------------------------------------
-// RENDER HUD
-// --------------------------------------------------
+// RENDER
 
 void HUD::render(
     int screenWidth,
@@ -302,26 +253,16 @@ void HUD::render(
     glDisable(GL_CULL_FACE);
     glEnable(GL_BLEND);
 
-    glBlendFunc(
-        GL_SRC_ALPHA,
-        GL_ONE_MINUS_SRC_ALPHA
-    );
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
     glUseProgram(program);
 
-    glUniform2f(
-        screenSizeLoc,
-        (float)screenWidth,
-        (float)screenHeight
-    );
+    glUniform2f(screenSizeLoc,(float)screenWidth,(float)screenHeight);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, atlasTexture);
 
-    glUniform1i(
-        glGetUniformLocation(program, "atlas"),
-        0
-    );
+    glUniform1i(glGetUniformLocation(program, "atlas"),0);
 
     glBindVertexArray(VAO);
 
@@ -337,21 +278,16 @@ void HUD::render(
         0.85f, 0.62f, 0.20f, 1.0f
     };
 
-    // --------------------------------------------------
     // HOTBAR POSITION
-    // --------------------------------------------------
 
     const float slotSize = 48.0f;
     const float gap = 5.0f;
 
-    const float totalWidth =
-        8.0f * slotSize + 7.0f * gap;
+    const float totalWidth =8.0f * slotSize + 7.0f * gap;
 
-    float startX =
-        (screenWidth - totalWidth) * 0.5f;
+    float startX =(screenWidth - totalWidth) * 0.5f;
 
-    float startY =
-        screenHeight - 70.0f;
+    float startY =screenHeight - 70.0f;
 
     // Background panel.
     drawQuad(
@@ -362,10 +298,7 @@ void HUD::render(
         nullptr,
         panelColor
     );
-
-    // --------------------------------------------------
     // EIGHT HOTBAR SLOTS
-    // --------------------------------------------------
 
     for (int i = 0; i < 8; i++) {
 
@@ -429,9 +362,7 @@ void HUD::render(
         );
     }
 
-    // --------------------------------------------------
     // CROSSHAIR
-    // --------------------------------------------------
 
     float centerX = screenWidth * 0.5f;
     float centerY = screenHeight * 0.5f;
@@ -493,9 +424,7 @@ void HUD::render(
         glEnable(GL_CULL_FACE);
 }
 
-// --------------------------------------------------
 // CLEANUP
-// --------------------------------------------------
 
 void HUD::cleanup() {
     glDeleteVertexArrays(1, &VAO);
