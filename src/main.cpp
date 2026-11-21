@@ -23,9 +23,6 @@
 #include <array>
 #include <cstddef>
 
-// --------------------------------------------------
-// VERTEX DATA
-// --------------------------------------------------
 
 struct Vertex {
     float x, y, z;
@@ -56,9 +53,6 @@ struct BlockPositionHash {
         return h;
     }
 };
-// --------------------------------------------------
-// SHADER LOADING
-// --------------------------------------------------
 
 std::string loadShader(const char* path) {
     std::ifstream file(path);
@@ -110,24 +104,18 @@ GLuint compileShader(
 }
 
 GLuint createShaderProgram() {
-    std::string vertexSource =
-        loadShader("shaders/block.vert");
+    std::string vertexSource =loadShader("shaders/block.vert");
 
-    std::string fragmentSource =
-        loadShader("shaders/block.frag");
+    std::string fragmentSource =loadShader("shaders/block.frag");
 
     if (vertexSource.empty() || fragmentSource.empty())
         return 0;
 
     GLuint vertex = compileShader(
         GL_VERTEX_SHADER,
-        vertexSource
-    );
+        vertexSource);
 
-    GLuint fragment = compileShader(
-        GL_FRAGMENT_SHADER,
-        fragmentSource
-    );
+    GLuint fragment = compileShader(GL_FRAGMENT_SHADER,fragmentSource);
 
     if (!vertex || !fragment) {
         if (vertex)
@@ -175,9 +163,6 @@ GLuint createShaderProgram() {
     return program;
 }
 
-// --------------------------------------------------
-// TEXTURE ATLAS UV GENERATION
-// --------------------------------------------------
 
 std::array<float, 8> getTileUVs(const Tile& tile) {
 
@@ -186,24 +171,14 @@ std::array<float, 8> getTileUVs(const Tile& tile) {
     constexpr float tileSize = 16.0f;
 
     // Small inset avoids sampling neighbouring tiles.
-    float u0 =
-        (tile.column * tileSize + 0.5f)
-        / atlasWidth;
+    float u0 =(tile.column * tileSize + 0.5f) / atlasWidth;
 
-    float u1 =
-        ((tile.column + 1) * tileSize - 0.5f)
-        / atlasWidth;
+    float u1 =((tile.column + 1) * tileSize - 0.5f) / atlasWidth;
 
     // Image is flipped vertically by stb_image.
-    float vTop =
-        1.0f -
-        (tile.row * tileSize + 0.5f)
-        / atlasHeight;
+    float vTop =1.0f -(tile.row * tileSize + 0.5f) / atlasHeight;
 
-    float vBottom =
-        1.0f -
-        ((tile.row + 1) * tileSize - 0.5f)
-        / atlasHeight;
+    float vBottom = 1.0f - ((tile.row + 1) * tileSize - 0.5f) / atlasHeight;
 
     return {
         u0, vBottom,
@@ -213,9 +188,6 @@ std::array<float, 8> getTileUVs(const Tile& tile) {
     };
 }
 
-// --------------------------------------------------
-// CUBE MESH GENERATION
-// --------------------------------------------------
 
 void appendCube(
     std::vector<Vertex>& vertices,
@@ -297,8 +269,7 @@ void appendCube(
 
         auto uv = getTileUVs(block.faces[face]);
 
-        unsigned int base =
-            static_cast<unsigned int>(vertices.size());
+        unsigned int base =static_cast<unsigned int>(vertices.size());
 
         // Four vertices for this face.
         for (int i = 0; i < 4; i++) {
@@ -498,9 +469,6 @@ void buildWorldMesh(
         );
     }
 }
-// --------------------------------------------------
-// MAIN
-// --------------------------------------------------
 
 int main() {
 
@@ -551,9 +519,6 @@ int main() {
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
-    // --------------------------------------------------
-    // LOAD SHADERS
-    // --------------------------------------------------
 
     GLuint shader = createShaderProgram();
 
@@ -563,12 +528,8 @@ int main() {
         return -1;
     }
 
-    // --------------------------------------------------
-    // LOAD TEXTURE ATLAS
-    // --------------------------------------------------
 
-    GLuint atlasTexture =
-        loadTexture("assets/textures/blocks.png");
+    GLuint atlasTexture =loadTexture("assets/textures/blocks.png");
 
     if (!atlasTexture) {
         glDeleteProgram(shader);
@@ -579,8 +540,7 @@ int main() {
         return -1;
     }
 
-    GLuint crackTexture =
-    loadTexture("assets/textures/crackoverlay.png");
+    GLuint crackTexture =loadTexture("assets/textures/crackoverlay.png");
 
     if (!crackTexture) {
         std::cerr << "Could not load crack overlay\n";
@@ -591,9 +551,6 @@ int main() {
         return -1;
 }
 
-    // --------------------------------------------------
-    // LOAD BLOCK DATABASE
-    // --------------------------------------------------
 
     std::vector<BlockDefinition> blocks;
 
@@ -620,8 +577,7 @@ int main() {
 
     // BUILD PROCEDURAL TERRAIN
 
-    std::vector<TerrainBlock> world =
-    generateTerrain(64, 16);
+    std::vector<TerrainBlock> world =generateTerrain(64, 16);
 
 // Spawn near the centre, above the terrain.
     int spawnX = 32;
@@ -659,9 +615,6 @@ int main() {
     std::cout << "MADE BY ADELINO ALESER T USING C++ AND OPENGL, THANKS\n";
     std::cout << "Found these programs very late so couldnt spend enough time. This is what i could do in 2 days. Hope you like it.\n Made a voxel engine in godot before. Hoping to see MipMaps program again";
     
-    // --------------------------------------------------
-    // SEND MESH TO GPU
-    // --------------------------------------------------
 
     GLuint VAO, VBO, EBO;
 
@@ -777,32 +730,21 @@ int main() {
 
     glBindVertexArray(0);
 
-    // --------------------------------------------------
-    // UNIFORM LOCATIONS
-    // --------------------------------------------------
+    GLint viewLoc = glGetUniformLocation(shader, "view");
 
-    GLint viewLoc =
-        glGetUniformLocation(shader, "view");
+    GLint projectionLoc = glGetUniformLocation(shader, "projection");
 
-    GLint projectionLoc =
-        glGetUniformLocation(shader, "projection");
-
-    GLint textureLoc =
-        glGetUniformLocation(shader, "textureAtlas");
+    GLint textureLoc =  glGetUniformLocation(shader, "textureAtlas");
 
 
     std::cout << "\nVOXELIA started!\n";
     std::cout << "Blocks: " << blocks.size() << "\n";
 
-    // --------------------------------------------------
-    // GAME LOOP
-    // --------------------------------------------------
     float lastFrame = static_cast<float>(glfwGetTime());
 
     while (!glfwWindowShouldClose(window)) {
 
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE)
-            == GLFW_PRESS) {
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE)== GLFW_PRESS) {
 
             glfwSetWindowShouldClose(window, true);
         }
@@ -914,8 +856,7 @@ int main() {
             nullptr
         );
         
-        const CrackOverlayState& crack =
-    interaction.getCrackOverlay();
+        const CrackOverlayState& crack =interaction.getCrackOverlay();
 
         if (crack.active) {
 
@@ -923,31 +864,21 @@ int main() {
 
             glUseProgram(shader);
 
-    // Use the crack sprite sheet instead of blocks.png.
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, crackTexture);
 
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // Don't let the overlay write over the block's depth.
             glDepthMask(GL_FALSE);
 
             glBindVertexArray(crackVAO);
 
             glBindBuffer(GL_ARRAY_BUFFER, crackVBO);
 
-            glBufferSubData(
-        GL_ARRAY_BUFFER,
-        0,
-        sizeof(quad),
-        quad.data());
+            glBufferSubData(GL_ARRAY_BUFFER, 0,sizeof(quad),quad.data());
 
-            glDrawElements(
-        GL_TRIANGLES,
-        6,
-        GL_UNSIGNED_INT,
-        nullptr);
+            glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,nullptr);
 
             glBindVertexArray(0);
 
@@ -963,9 +894,6 @@ int main() {
         glfwPollEvents();
     }
 
-    // --------------------------------------------------
-    // CLEANUP
-    // --------------------------------------------------
 
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
