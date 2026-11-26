@@ -34,7 +34,7 @@ Left Mouse Button- Break blocks
 Right Mouse Button- Place blocks
 1–8- Select blocks
 
-VOXELIA is dforlWindowsrusingows using C++ and MSYS2 UCRT64.
+VOXELIA is build for Windows using C++ and MSYS2 UCRT64.
 
 The project requires a C++17 compiler and the necessary libraries (GLFW, GLEW, and GLM).
 
